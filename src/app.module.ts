@@ -11,6 +11,10 @@ import { UserEntity } from './app/user/user.entity';
 import { UserModule } from './app/user/user.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { AuthController } from './app/auth/auth.controller';
+import { AuthService } from './app/auth/auth.service';
+import { AuthModule } from './app/auth/auth.module';
+import { CognitoGroupsGuard } from './app/cognito-groups.guard';
 
 @Module({
   imports: [
@@ -34,9 +38,10 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     TypeOrmModule.forFeature([RoleEntity]),
     MoviesModule,
     RoleModule,
-    UserModule
+    UserModule,
+    AuthModule
   ],
-  controllers: [AppController, MoviesController],
-  providers: [AppService],
+  controllers: [AppController, MoviesController, AuthController],
+  providers: [AppService, AuthService, AuthService, CognitoGroupsGuard],
 })
 export class AppModule { }

@@ -14,7 +14,19 @@ export class UserService {
         return this.userRepository.find();
     }
 
-    getUser(id: number): Promise<UserEntity> {
+    getUserById(id: number): Promise<UserEntity> {
         return this.userRepository.findOneOrFail({ where: { id } });
     }
+
+    getUserByUsername(username: string): Promise<UserEntity> {
+        return this.userRepository.findOneOrFail({ where: { username } });
+    }
+
+    update(user_id: number, password, access_token): Promise<any> {
+        return this.userRepository.update(
+            { id: user_id },
+            { password: password, access_token: access_token },
+        );
+    }
+
 }

@@ -4,14 +4,14 @@ import { RoleService } from './role.service';
 
 @Resolver(() => RoleEntity)
 export class RoleResolver {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(private readonly roleService: RoleService) { }
 
   @Query(() => [RoleEntity], { name: 'roles' })
   getRoles(): Promise<RoleEntity[]> {
     return this.roleService.getRoles();
   }
 
-  @Query(() => [RoleEntity], { name: 'rol' })
+  @Query(() => RoleEntity, { name: 'rol' })
   getRole(@Args('id') id: number): Promise<RoleEntity> {
     return this.roleService.getRole(id);
   }

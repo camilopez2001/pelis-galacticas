@@ -19,4 +19,9 @@ export class UserEntity {
   @Field(() => String)
   @Column({ type: 'varchar' })
   password: string;
+
+  @Field(() => String)
+  @Column({ type: 'varchar' })
+  access_token: string;
+  static find: any;
 }

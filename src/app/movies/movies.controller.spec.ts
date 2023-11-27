@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesController } from './movies.controller';
 import { MoviesService } from './movies.service';
 import { of } from 'rxjs';
+import { MovieDto } from './movies.dto';
 
 describe('MoviesController', () => {
   let moviesController: MoviesController;
@@ -19,7 +20,7 @@ describe('MoviesController', () => {
 
   describe('allMovies', () => {
     it('should return an array of movies', async () => {
-      const movies = [
+      const movies: MovieDto[] = [
         {
           title: 'A New Hope',
           episode_id: 4,
