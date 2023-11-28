@@ -83,13 +83,4 @@ export class AuthController {
       throw new BadRequestException(e.message);
     }
   }
-
-  @Post('/logout')
-  async logout(): Promise<void> {
-    try {
-      return this.authService.logout();
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
-  }
 }

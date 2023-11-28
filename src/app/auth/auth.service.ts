@@ -9,6 +9,7 @@ import {
 } from 'amazon-cognito-identity-js';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { UserService } from '../user/user.service';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -86,11 +87,17 @@ export class AuthService {
         const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
 
         return new Promise((resolve, reject) => {
-            cognitoIdentityServiceProvider.confirmSignUp(params, (err, data) => {
+            cognitoIdentityServiceProvider.confirmSignUp(params, async (err, data) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(data);
+                    const userParams = {
+                        UserPoolId: this.authConfig.userPoolId,
+                        Username: username,
+                    };
+                    this.userService.createUser(username).then((user) => {
+                        resolve(user);
+                    })
                 }
             });
         });
@@ -115,6 +122,15 @@ export class AuthService {
                         result['refreshToken']['token'],
                         result['idToken']['jwtToken'],
                     );
+                    this.userService.getUserByUsername(name).then(async (user) => {
+                        if(user.email == null)
+                            this.userService.updateUser(
+                                user.id,
+                                result.getIdToken().decodePayload().email,
+                                await this.hashPassword(password),
+                                result.getIdToken().getJwtToken(),
+                            );
+                    })
                     this.userdata = result;
                     resolve(result);
                 },
@@ -162,7 +178,7 @@ export class AuthService {
             }
             const user_id = user.id;
 
-            this.userService.update(user_id, this.refreshtoken, this.accesstoken).then(() => {
+            this.userService.updatePassword(user_id, this.refreshtoken, this.accesstoken).then(() => {
                 return {
                     success: true,
                     message: `Refresh token updated for user ${username}`,
@@ -251,20 +267,11 @@ export class AuthService {
             });
         });
     }
-    logout(): void {
-        new Promise(() => {
-            const cognitoUser = this.userPool.getCurrentUser();
-            if (cognitoUser !== null) {
-                this.userService.getUserByUsername(cognitoUser['username']).then(user => {
-                    const user_id = user.id;
-                    this.userService.update(user_id, '', '').then(() => {
-                        cognitoUser.signOut();
-                    })
-                }, () => {
-                    throw new NotFoundException(`User with username ${cognitoUser['username']} not found`);
-                }
-                );
-            }
-        });
+
+    async hashPassword(password: string) {
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        return hashedPassword;
     }
 }

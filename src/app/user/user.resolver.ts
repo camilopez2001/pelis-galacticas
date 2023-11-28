@@ -11,7 +11,7 @@ export class UserResolver {
     return this.userService.getUsers();
   }
 
-  @Query(() => [UserEntity], { name: 'user' })
+  @Query(() => UserEntity, { name: 'user' })
   getUserById(@Args('id') id: number): Promise<UserEntity> {
     return this.userService.getUserById(id);
   }

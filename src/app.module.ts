@@ -5,8 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MoviesModule } from './app/movies/movies.module';
 import { MoviesController } from './app/movies/movies.controller';
-import { RoleModule } from './app/role/role.module';
-import { RoleEntity } from './app/role/role.entity';
 import { UserEntity } from './app/user/user.entity';
 import { UserModule } from './app/user/user.module';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -27,7 +25,6 @@ import { CognitoGroupsGuard } from './app/cognito-groups.guard';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        RoleEntity,
         UserEntity
       ],
     }),
@@ -35,9 +32,7 @@ import { CognitoGroupsGuard } from './app/cognito-groups.guard';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    TypeOrmModule.forFeature([RoleEntity]),
     MoviesModule,
-    RoleModule,
     UserModule,
     AuthModule
   ],
